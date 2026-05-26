@@ -200,7 +200,7 @@
 
     <div>
         <div class="malla-header">
-            <h2>Malla Curricular Convalidada (Plan 2025)</h2>
+            <h2>Malla Curricular LIMB</h2>
             <div class="stats" id="creditos-counter">Créditos Revalidados: 0</div>
         </div>
 
@@ -210,7 +210,7 @@
 </div>
 
 <script>
-// Mapeo exacto de los dictámenes correspondientes a las páginas 32 y 33
+// Equivalencias 
 const equivalencias = [
   { antigua: "Programación", nueva: "Fundamentos de programación", creditos: 8 },
   { antigua: "Anatomía mecánica II", nueva: "Biomecánica", creditos: 8 },
@@ -238,17 +238,29 @@ const equivalencias = [
   { antigua: "Dispositivos electrónicos", nueva: "Dispositivos usables y vestibles", creditos: 8 }
 ];
 
-// Distribución oficial aproximada extraída de la estructura del PDF de Bioingeniería
+// Nueva malla
 const estructuraMalla = {
-    "Primer Ciclo": ["Fundamentos de programación", "Anatomía", "Cálculo diferencial e integral"],
-    "Segundo Ciclo": ["Biomecánica", "Ecuaciones diferenciales", "Circuitos electrónicos"],
-    "Tercer Ciclo": ["Legislación y seguridad hospitalaria", "Estadística experimental", "Tecnologías Médicas"],
-    "Cuarto Ciclo": ["Instrumentación e instalación hospitalaria", "Gestión e instrumentación biomédica", "Procesamiento de bioseñales"],
-    "Quinto Ciclo": ["Fisiología y fisiopatología", "Electrofisiología y neurociencias", "Procesamiento de bioimágenes"],
-    "Sexto Ciclo (Especializante)": ["Biosensores y transductores", "Comunicación y control de sistemas embebidos", "Microelectrónica"],
-    "Séptimo Ciclo (Módulos)": ["Prótesis y órtesis", "Análisis del movimiento", "Conectividad cerebral"],
-    "Octavo Ciclo (Terminal)": ["Rehabilitación", "Dispositivos usables y vestibles"]
+    "Primer Semestre": ["Inducion universitaria","Analisis de problemas globales del siglo xx","Precalculo","Algebra lineal","Fundamentos de fisica","Fundamentos de programación"],
+    "Segundo Semestre": ["Legislacion y seguridad hospitalaria","Historia de la tecnologia, el arte y la sociedad","Anatomía","Cálculo diferencial e integral","Circuitos electricos","Programación estructurada"],
+    "Tercer Semestre": ["Instrumentación e instalación hospitalaria", " Ciencia y sustentabilidad", "Biomecánica", "Ecuaciones diferenciales", "Electrónica digital", "Fundamentos de inteligencia artificial"],
+    "Cuarto Semestre": ["Procesos y organizacion biologica", "Estadistica experimental", "Estructuras de los sistemas biologicos", "Comunicacion y control de sistemas embebidos", "Señales en sistemas robóticos"],
+    "Quinto Semestre": ["Tecnologías Médicas", "Administración de negocios", "Electrofisiología y neurociencias", "Fisiología y fisiopatología", "Procesamiento de bioseñales", "Procesamiento de bioimágenes"],
+    "Sexto Semestre": ["Gestión e instrumentación biomédica", "Biosensores y transductores"],
+    "Séptimo Semestre ": ["Tecnología de la información en salud"],
+    "Octavo Semestre ": ["Ingeniería clinica", "Innovación tecnologíca y emprendimiento"],
+    "Noveno Semestre ": ["Ciencias ómicas","Biomedicina de precisión"],
+    "Modulo 1: Biomecanica Y Rehabilitacion": ["Análisis del movimiento", "Protesis y órtesis", "Rehabilitación"],
+    "Modulo 2: Biomateriales": ["Biointegración de materiales", "Regulación de biomateriales", "Diseño de biomateriales"],
+    "Modulo 3: Bio-inteligencia Artificial": ["Bases de inteligencia artificial generativa", "Aplicaciones de sistemas biomédicos inteligentes", "Diseño de sistemas biomédicos inteligentes"],
+    "Modulo 4: Neuroingeniería": ["Conducta y sistemas cognitivos", "Neuroinstrumentación", "Neuroinformática"],
+    "Modulo 5: Neurotecnologia": ["Experencia de usuario", "Conectividad cerebral", "Conectómica"],
+    "Modulo 6: Biorobotica": ["Principios biroboticos", "Sistemas bioinspirados", "Robotica suave"],
+    "Modulo 7: Dispositivos usables y vestibles": ["Dispositivos microfluídicos", "Microelectrónica", "Dispositivos usables y vestibles"],
+    "Modulo 8: Biología Sintética": ["Biología sintética", "Ingenieria de organos y tejidos", "Diseño de organoides"],
+    "Modulo 9: Politicas Publicas": ["Liderazgo estratégico en salud", "Ingeniería biomédica y sociedad", "Diseño de políticas públicas"],
+    "Modulo 10: Ciencia y Tecnología Emergente": ["Tecnología emergente I", "Tecnología emergente II", "Tecnología emergente III"]
 };
+
 
 // Inicializar el panel izquierdo de opciones
 const checkListContenedor = document.getElementById('check-list');
