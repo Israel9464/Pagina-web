@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Curricular Interactiva - Biomedicina</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --neutral-bg: #f8fafc;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 25px;
+        }
+
+        /* Panel Izquierdo: Selector */
+        .sidebar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h3 {
+            color: var(--primary);
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .materia-check {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            margin: 6px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+
+        .materia-check:hover {
+            background: #f0fdf4;
+            border-color: var(--success);
+        }
+
+        .materia-check input {
+            margin-right: 10px;
+            accent-color: var(--success);
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Panel Derecho: Malla Visual */
+        .malla-header {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgb(0 0 0 / 0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .malla-header h2 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        .stats {
+            font-size: 0.9rem;
+            background: #eff6ff;
+            padding: 6px 15px;
+            border-radius: 20px;
+            color: var(--primary-light);
+            font-weight: bold;
+        }
+
+        .malla-canvas {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columnas grandes de semestres */
+            gap: 20px;
+        }
+
+        @media (max-width: 1000px) {
+            .malla-canvas { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 700px) {
+            .malla-canvas { grid-template-columns: 1fr; }
+        }
+
+        .semestre-block {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            border-top: 5px solid var(--primary-light);
+        }
+
+        .semestre-block h4 {
+            margin: 0 0 15px 0;
+            color: var(--primary);
+            text-align: center;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Nodos/Tarjetas de la Malla */
+        .nodo-materia {
+            background: var(--neutral-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .nodo-materia .title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .nodo-materia .meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Efecto Visual Activo (Revalidada) */
+        .nodo-materia.active {
+            background: var(--success-bg);
+            border-color: var(--success);
+            color: var(--success-text);
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgb(16 185 129 / 0.2);
+        }
+
+        .nodo-materia.active .meta {
+            color: var(--success-text);
+        }
+
+        .status-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 0.9rem;
+            color: var(--success);
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .nodo-materia.active .status-icon {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="sidebar">
+        <h3><i class="fa-solid fa-graduation-cap"></i> Plan Anterior Cursado</h3>
+        <p style="font-size: 0.8rem; color: #64748b;">Marca las materias que el alumno ya aprobó para ver el impacto visual en el nuevo plan:</p>
+        <div id="check-list"></div>
+    </div>
+
+    <div>
+        <div class="malla-header">
+            <h2>Malla Curricular Convalidada (Plan 2025)</h2>
+            <div class="stats" id="creditos-counter">Créditos Revalidados: 0</div>
+        </div>
+
+        <div class="malla-canvas" id="malla-visual">
+            </div>
+    </div>
+</div>
+
+<script>
+// Mapeo exacto de los dictámenes correspondientes a las páginas 32 y 33
+const equivalencias = [
+  { antigua: "Programación", nueva: "Fundamentos de programación", creditos: 8 },
+  { antigua: "Anatomía mecánica II", nueva: "Biomecánica", creditos: 8 },
+  { antigua: "Anatomía mecánica I", nueva: "Anatomía", creditos: 8 },
+  { antigua: "Métodos matemáticos I", nueva: "Cálculo diferencial e integral", creditos: 8 },
+  { antigua: "Métodos matemáticos II", nueva: "Ecuaciones diferenciales", creditos: 8 },
+  { antigua: "Instalaciones y seguridad radiológica", nueva: "Legislación y seguridad hospitalaria", creditos: 10 },
+  { antigua: "Estadística y procesos estocásticos", nueva: "Estadística experimental", creditos: 8 },
+  { antigua: "Instrumentación Diagnóstica y Terapéutica", nueva: "Tecnologías Médicas", creditos: 8 },
+  { antigua: "Circuitos eléctricos", nueva: "Circuitos electrónicos", creditos: 8 },
+  { antigua: "Acondicionamiento de bioseñales y bioimágenes", nueva: "Señales en sistemas robóticos", creditos: 8 },
+  { antigua: "Instrumentación e instalación hospitalaria", nueva: "Instrumentación e instalación hospitalaria", creditos: 8 },
+  { antigua: "Procesamiento de bioseñales", nueva: "Procesamiento de bioseñales", creditos: 8 },
+  { antigua: "Procesamiento de bioimágenes", nueva: "Procesamiento de bioimágenes", creditos: 8 },
+  { antigua: "Instrumentación e instalación quirúrgica", nueva: "Gestión e instrumentación biomédica", creditos: 8 },
+  { antigua: "Electrofisiología molecular I", nueva: "Fisiología y fisiopatología", creditos: 10 },
+  { antigua: "Electrofisiología molecular II", nueva: "Electrofisiología y neurociencias", creditos: 10 },
+  { antigua: "Biosensores y transductores", nueva: "Biosensores y transductores", creditos: 8 },
+  { antigua: "Programación de sistemas embebidos", nueva: "Comunicación y control de sistemas embebidos", creditos: 8 },
+  { antigua: "Prótesis y órtesis", nueva: "Prótesis y órtesis", creditos: 8 },
+  { antigua: "Análisis del movimiento", nueva: "Análisis del movimiento", creditos: 8 },
+  { antigua: "Imagenología médica", nueva: "Conectividad cerebral", creditos: 8 },
+  { antigua: "Sistemas electrónicos", nueva: "Microelectrónica", creditos: 8 },
+  { antigua: "Instrumentación y técnicas de rehabilitación", nueva: "Rehabilitación", creditos: 8 },
+  { antigua: "Dispositivos electrónicos", nueva: "Dispositivos usables y vestibles", creditos: 8 }
+];
+
+// Distribución oficial aproximada extraída de la estructura del PDF de Bioingeniería
+const estructuraMalla = {
+    "Primer Ciclo": ["Fundamentos de programación", "Anatomía", "Cálculo diferencial e integral"],
+    "Segundo Ciclo": ["Biomecánica", "Ecuaciones diferenciales", "Circuitos electrónicos"],
+    "Tercer Ciclo": ["Legislación y seguridad hospitalaria", "Estadística experimental", "Tecnologías Médicas"],
+    "Cuarto Ciclo": ["Instrumentación e instalación hospitalaria", "Gestión e instrumentación biomédica", "Procesamiento de bioseñales"],
+    "Quinto Ciclo": ["Fisiología y fisiopatología", "Electrofisiología y neurociencias", "Procesamiento de bioimágenes"],
+    "Sexto Ciclo (Especializante)": ["Biosensores y transductores", "Comunicación y control de sistemas embebidos", "Microelectrónica"],
+    "Séptimo Ciclo (Módulos)": ["Prótesis y órtesis", "Análisis del movimiento", "Conectividad cerebral"],
+    "Octavo Ciclo (Terminal)": ["Rehabilitación", "Dispositivos usables y vestibles"]
+};
+
+// Inicializar el panel izquierdo de opciones
+const checkListContenedor = document.getElementById('check-list');
+equivalencias.forEach((eq, idx) => {
+    const label = document.createElement('label');
+    label.className = 'materia-check';
+    label.innerHTML = `
+        <input type="checkbox" data-nueva="${eq.nueva}" data-creditos="${eq.creditos}" onchange="renderizarCambios()">
+        <span>${eq.antigua}</span>
+    `;
+    checkListContenedor.appendChild(label);
+});
+
+// Renderizar bloques visuales de la malla
+const mallaVisual = document.getElementById('malla-visual');
+function construirMallaVisual() {
+    mallaVisual.innerHTML = '';
+    
+    for (const [bloque, materias] of Object.entries(estructuraMalla)) {
+        const divBloque = document.createElement('div');
+        divBloque.className = 'semestre-block';
+        divBloque.innerHTML = `<h4>${bloque}</h4>`;
+        
+        materias.forEach(materia => {
+            const infoMateria = equivalencias.find(e => e.nueva === materia);
+            const creditos = infoMateria ? infoMateria.creditos : 8;
+            
+            // Generamos una ID limpia sin caracteres especiales
+            const safeId = materia.replace(/[^a-zA-Z0-9]/g, '');
+            
+            const divNodo = document.createElement('div');
+            divNodo.className = 'nodo-materia';
+            divNodo.id = `nodo-${safeId}`;
+            divNodo.innerHTML = `
+                <div class="status-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="title">${materia}</div>
+                <div class="meta">
+                    <span><i class="fa-solid fa-bookmark"></i> Obligatoria</span>
+                    <span>${creditos} CR</span>
+                </div>
+            `;
+            divBloque.appendChild(divNodo);
+        });
+        
+        mallaVisual.appendChild(divBloque);
+    }
+}
+
+// Escuchar cambios de estados de los checkboxes y aplicar animaciones
+function renderizarCambios() {
+    // Limpiar estados anteriores
+    document.querySelectorAll('.nodo-materia').forEach(nodo => nodo.classList.remove('active'));
+    
+    let totalCreditosRevalidados = 0;
+    const marcados = document.querySelectorAll('#check-list input:checked');
+    
+    marcados.forEach(chk => {
+        const nuevaMateria = chk.getAttribute('data-nueva');
+        const creditos = parseInt(chk.getAttribute('data-creditos'));
+        const safeId = nuevaMateria.replace(/[^a-zA-Z0-9]/g, '');
+        const nodoTarget = document.getElementById(`nodo-${safeId}`);
+        
+        if (nodoTarget) {
+            nodoTarget.classList.add('active');
+            totalCreditosRevalidados += creditos;
+        }
+    });
+    
+    // Actualizar el contador superior con animación
+    document.getElementById('creditos-counter').innerHTML = `<i class="fa-solid fa-fire"></i> Créditos Convalidados: ${totalCreditosRevalidados}`;
+}
+
+// Ejecución inicial
+construirMallaVisual();
+</script>
+
+</body>
+</html>
