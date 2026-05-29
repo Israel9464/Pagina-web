@@ -32,7 +32,6 @@
             gap: 25px;
         }
 
-        /* Panel Izquierdo: Selector */
         .sidebar {
             background: white;
             padding: 20px;
@@ -76,7 +75,6 @@
             height: 16px;
         }
 
-        /* Panel Derecho: Malla Visual */
         .malla-header {
             background: white;
             padding: 15px 30px;
@@ -86,6 +84,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .malla-header h2 {
@@ -94,8 +94,15 @@
             font-size: 1.4rem;
         }
 
-        .stats {
-            font-size: 0.9rem;
+        .stats-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            font-size: 0.88rem;
             background: #eff6ff;
             padding: 6px 15px;
             border-radius: 20px;
@@ -103,18 +110,35 @@
             font-weight: bold;
         }
 
+        .stat-pill.green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Barra de progreso global */
+        .progress-bar-wrap {
+            width: 100%;
+            background: #e2e8f0;
+            border-radius: 999px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            border-radius: 999px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .malla-canvas {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columnas grandes de semestres */
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
 
-        @media (max-width: 1000px) {
-            .malla-canvas { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 700px) {
-            .malla-canvas { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 1000px) { .malla-canvas { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px) { .malla-canvas { grid-template-columns: 1fr; } }
 
         .semestre-block {
             background: white;
@@ -133,7 +157,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Nodos/Tarjetas de la Malla */
         .nodo-materia {
             background: var(--neutral-bg);
             border: 1px solid var(--border-color);
@@ -150,16 +173,36 @@
             font-weight: 600;
             margin-bottom: 8px;
             line-height: 1.3;
+            padding-right: 22px;
         }
 
         .nodo-materia .meta {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 0.75rem;
             color: #64748b;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
-        /* Efecto Visual Activo (Revalidada) */
+        /* Porcentaje badge */
+        .pct-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            border-radius: 99px;
+            padding: 2px 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: all 0.4s ease;
+        }
+
+        .nodo-materia.active .pct-badge {
+            background: #065f46;
+            color: #d1fae5;
+        }
+
         .nodo-materia.active {
             background: var(--success-bg);
             border-color: var(--success);
@@ -200,17 +243,23 @@
 
     <div>
         <div class="malla-header">
-            <h2>Malla Curricular LIMB</h2>
-            <div class="stats" id="creditos-counter">Créditos Revalidados: 0</div>
+            <h2>Malla Curricular LIB</h2>
+            <div class="stats-bar">
+                <div class="stat-pill" id="creditos-counter"><i class="fa-solid fa-bookmark"></i> Créditos convalidados: 0</div>
+                <div class="stat-pill green" id="pct-counter"><i class="fa-solid fa-fire"></i> Avance del plan: 0%</div>
+            </div>
+            <div style="width: 100%;">
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="malla-canvas" id="malla-visual">
-            </div>
+        <div class="malla-canvas" id="malla-visual"></div>
     </div>
 </div>
 
 <script>
-// Equivalencias 
 const equivalencias = [
   { antigua: "Programación", nueva: "Fundamentos de programación", creditos: 8 },
   { antigua: "Anatomía mecánica II", nueva: "Biomecánica", creditos: 8 },
@@ -230,7 +279,7 @@ const equivalencias = [
   { antigua: "Electrofisiología molecular II", nueva: "Electrofisiología y neurociencias", creditos: 10 },
   { antigua: "Biosensores y transductores", nueva: "Biosensores y transductores", creditos: 8 },
   { antigua: "Programación de sistemas embebidos", nueva: "Comunicación y control de sistemas embebidos", creditos: 8 },
-  { antigua: "Prótesis y órtesis", nueva: "Prótesis y órtesis", creditos: 8 },
+  { antigua: "Prótesis y órtesis ", nueva: "Prótesis y órtesis", creditos: 8 },
   { antigua: "Análisis del movimiento", nueva: "Análisis del movimiento", creditos: 8 },
   { antigua: "Imagenología médica", nueva: "Conectividad cerebral", creditos: 8 },
   { antigua: "Sistemas electrónicos", nueva: "Microelectrónica", creditos: 8 },
@@ -238,18 +287,17 @@ const equivalencias = [
   { antigua: "Dispositivos electrónicos", nueva: "Dispositivos usables y vestibles", creditos: 8 }
 ];
 
-// Nueva malla
 const estructuraMalla = {
-    "Primer Semestre": ["Inducion universitaria","Analisis de problemas globales del siglo xx","Precalculo","Algebra lineal","Fundamentos de fisica","Fundamentos de programación"],
-    "Segundo Semestre": ["Legislacion y seguridad hospitalaria","Historia de la tecnologia, el arte y la sociedad","Anatomía","Cálculo diferencial e integral","Circuitos electricos","Programación estructurada"],
+    "Primer Semestre": ["Inducion universitaria","Analisis de problemas globales del siglo XX","Precalculo","Algebra lineal","Fundamentos de fisica","Fundamentos de programación"],
+    "Segundo Semestre": ["Legislación y seguridad hospitalaria","Historia de la tecnologia, el arte y la sociedad","Anatomía","Cálculo diferencial e integral","Circuitos electrónicos","Programación estructurada"],
     "Tercer Semestre": ["Instrumentación e instalación hospitalaria", " Ciencia y sustentabilidad", "Biomecánica", "Ecuaciones diferenciales", "Electrónica digital", "Fundamentos de inteligencia artificial"],
-    "Cuarto Semestre": ["Procesos y organizacion biologica", "Estadistica experimental", "Estructuras de los sistemas biologicos", "Comunicacion y control de sistemas embebidos", "Señales en sistemas robóticos"],
+    "Cuarto Semestre": ["Procesos y organizacion biologica", "Estadística experimental", "Estructuras de los sistemas biologicos", "Comunicación y control de sistemas embebidos", "Señales en sistemas robóticos"],
     "Quinto Semestre": ["Tecnologías Médicas", "Administración de negocios", "Electrofisiología y neurociencias", "Fisiología y fisiopatología", "Procesamiento de bioseñales", "Procesamiento de bioimágenes"],
     "Sexto Semestre": ["Gestión e instrumentación biomédica", "Biosensores y transductores"],
     "Séptimo Semestre ": ["Tecnología de la información en salud"],
     "Octavo Semestre ": ["Ingeniería clinica", "Innovación tecnologíca y emprendimiento"],
     "Noveno Semestre ": ["Ciencias ómicas","Biomedicina de precisión"],
-    "Modulo 1: Biomecanica Y Rehabilitacion": ["Análisis del movimiento", "Protesis y órtesis", "Rehabilitación"],
+    "Modulo 1: Biomecanica Y Rehabilitacion": ["Análisis del movimiento", "Prótesis y órtesis", "Rehabilitación"],
     "Modulo 2: Biomateriales": ["Biointegración de materiales", "Regulación de biomateriales", "Diseño de biomateriales"],
     "Modulo 3: Bio-inteligencia Artificial": ["Bases de inteligencia artificial generativa", "Aplicaciones de sistemas biomédicos inteligentes", "Diseño de sistemas biomédicos inteligentes"],
     "Modulo 4: Neuroingeniería": ["Conducta y sistemas cognitivos", "Neuroinstrumentación", "Neuroinformática"],
@@ -261,10 +309,21 @@ const estructuraMalla = {
     "Modulo 10: Ciencia y Tecnología Emergente": ["Tecnología emergente I", "Tecnología emergente II", "Tecnología emergente III"]
 };
 
+// Calcular total de créditos del nuevo plan
+let totalCreditosPlan = 0;
+const creditosPorMateria = {};
+for (const materias of Object.values(estructuraMalla)) {
+    for (const materia of materias) {
+        const info = equivalencias.find(e => e.nueva === materia);
+        const creditos = info ? info.creditos : 8;
+        creditosPorMateria[materia] = creditos;
+        totalCreditosPlan += creditos;
+    }
+}
 
-// Inicializar el panel izquierdo de opciones
+// Panel lateral de checkboxes
 const checkListContenedor = document.getElementById('check-list');
-equivalencias.forEach((eq, idx) => {
+equivalencias.forEach((eq) => {
     const label = document.createElement('label');
     label.className = 'materia-check';
     label.innerHTML = `
@@ -274,23 +333,20 @@ equivalencias.forEach((eq, idx) => {
     checkListContenedor.appendChild(label);
 });
 
-// Renderizar bloques visuales de la malla
+// Construir malla visual
 const mallaVisual = document.getElementById('malla-visual');
 function construirMallaVisual() {
     mallaVisual.innerHTML = '';
-    
     for (const [bloque, materias] of Object.entries(estructuraMalla)) {
         const divBloque = document.createElement('div');
         divBloque.className = 'semestre-block';
         divBloque.innerHTML = `<h4>${bloque}</h4>`;
-        
+
         materias.forEach(materia => {
-            const infoMateria = equivalencias.find(e => e.nueva === materia);
-            const creditos = infoMateria ? infoMateria.creditos : 8;
-            
-            // Generamos una ID limpia sin caracteres especiales
+            const creditos = creditosPorMateria[materia] || 8;
+            const pct = ((creditos / totalCreditosPlan) * 100).toFixed(1);
             const safeId = materia.replace(/[^a-zA-Z0-9]/g, '');
-            
+
             const divNodo = document.createElement('div');
             divNodo.className = 'nodo-materia';
             divNodo.id = `nodo-${safeId}`;
@@ -298,44 +354,41 @@ function construirMallaVisual() {
                 <div class="status-icon"><i class="fa-solid fa-circle-check"></i></div>
                 <div class="title">${materia}</div>
                 <div class="meta">
-                    <span><i class="fa-solid fa-bookmark"></i> Obligatoria</span>
-                    <span>${creditos} CR</span>
+                    <span><i class="fa-solid fa-bookmark"></i> ${creditos} CR</span>
                 </div>
             `;
             divBloque.appendChild(divNodo);
         });
-        
+
         mallaVisual.appendChild(divBloque);
     }
 }
 
-// Escuchar cambios de estados de los checkboxes y aplicar animaciones
 function renderizarCambios() {
-    // Limpiar estados anteriores
-    document.querySelectorAll('.nodo-materia').forEach(nodo => nodo.classList.remove('active'));
-    
-    let totalCreditosRevalidados = 0;
-    const marcados = document.querySelectorAll('#check-list input:checked');
-    
-    marcados.forEach(chk => {
+    document.querySelectorAll('.nodo-materia').forEach(n => n.classList.remove('active'));
+
+    let totalRevalidados = 0;
+    document.querySelectorAll('#check-list input:checked').forEach(chk => {
         const nuevaMateria = chk.getAttribute('data-nueva');
         const creditos = parseInt(chk.getAttribute('data-creditos'));
         const safeId = nuevaMateria.replace(/[^a-zA-Z0-9]/g, '');
-        const nodoTarget = document.getElementById(`nodo-${safeId}`);
-        
-        if (nodoTarget) {
-            nodoTarget.classList.add('active');
-            totalCreditosRevalidados += creditos;
+        const nodo = document.getElementById(`nodo-${safeId}`);
+        if (nodo) {
+            nodo.classList.add('active');
+            totalRevalidados += creditos;
         }
     });
-    
-    // Actualizar el contador superior con animación
-    document.getElementById('creditos-counter').innerHTML = `<i class="fa-solid fa-fire"></i> Créditos Convalidados: ${totalCreditosRevalidados}`;
+
+    const pct = ((totalRevalidados / totalCreditosPlan) * 100).toFixed(1);
+
+    document.getElementById('creditos-counter').innerHTML =
+        `<i class="fa-solid fa-bookmark"></i> Créditos convalidados: ${totalRevalidados} / ${totalCreditosPlan}`;
+    document.getElementById('pct-counter').innerHTML =
+        `<i class="fa-solid fa-fire"></i> Avance del plan: ${pct}%`;
+    document.getElementById('progress-fill').style.width = `${pct}%`;
 }
 
-// Ejecución inicial
 construirMallaVisual();
 </script>
-
 </body>
 </html>
