@@ -286,6 +286,7 @@
         <h3><i class="fa-solid fa-graduation-cap"></i> Plan anterior cursado</h3>
         <p>Marca las materias que el alumno ya aprobó para ver cuántos créditos se convalidan en el nuevo plan.</p>
         <div id="check-list"></div>
+        
     </div>
 
     <!-- Main content -->
@@ -371,6 +372,10 @@ const equivalencias = [
 // Materias con crédito distinto de 8 especificados
 // ─────────────────────────────────────────────
 const creditosEspeciales = {
+   // Extras
+  "Formacion integral":                             4,
+  "Practicas profesionales":                       20,
+  "Proyecto modular":                               3,
   // Semestre I
   "Inducción universitaria":                        5,
   "Análisis de problemas globales del siglo XX":    0,
@@ -396,11 +401,14 @@ const creditosEspeciales = {
   "Laboratorio Abierto: Diseño":                    3,
   "Laboratorio Abierto: Construcción":              3,
   "Laboratorio Abierto: Pruebas":                   3,
-  // Proyecto modular
-  "Proyecto modular":                               20,
 };
 
 const estructuraMalla = {
+  "Extras": [
+    "Formacion integral",
+    "Practicas profesionales",
+    "Proyecto modular"
+  ],
   "Primer Semestre": [
     "Inducción universitaria",
     "Análisis de problemas globales del siglo XX",
@@ -444,29 +452,23 @@ const estructuraMalla = {
     "Gestión e instrumentación biomédica",
     "Biosensores y transductores",
     "Seminario de integración: Protocolo",
-    "Laboratorio Abierto: Diseño"
+    
   ],
   "Séptimo Semestre": [
-    "Tecnología de la información en salud",
-    "Innovación tecnológica y emprendimiento",
+    "Tecnología de la información en salud", 
     "Seminario de integración: Desarrollo",
-    "Laboratorio Abierto: Construcción"
+    "Laboratorio Abierto: Diseño"
   ],
   "Octavo Semestre": [
     "Ingeniería clínica",
-    "UA 1 del Módulo Uno",
-    "UA 2 del Módulo Uno",
-    "UA 3 del Módulo Uno",
-    "UA 1 del Módulo Dos",
-    "UA 2 del Módulo Dos",
-    "UA 3 del Módulo Dos",
-    "Seminario de integración: Comunicación",
-    "Laboratorio Abierto: Pruebas"
+    "Innovación tecnológica y emprendimiento",
+    "Laboratorio Abierto: Construcción" 
   ],
   "Noveno Semestre": [
     "Ciencias ómicas",
     "Biomedicina de precisión",
-    "Proyecto modular"
+    "Seminario de integración: Comunicación",
+    "Laboratorio Abierto: Pruebas"
   ],
   "Módulo 1 — Biomecánica y Rehabilitación": [
     "Análisis del movimiento",
@@ -523,15 +525,34 @@ const estructuraMalla = {
 // ── Calcular créditos del plan nuevo ──
 let totalNuevo = 0;
 const crPorMateria = {};
-for (const materias of Object.values(estructuraMalla)) {
+const bloquesModulo = [];
+
+for (const [bloque, materias] of Object.entries(estructuraMalla)) {
+  const esModulo = bloque.startsWith('Módulo');
   for (const m of materias) {
     const cr = creditosEspeciales[m] !== undefined ? creditosEspeciales[m] : 8;
-    // override con crNueva si hay equivalencia definida
     const eq = equivalencias.find(x => x.nueva === m);
     crPorMateria[m] = eq ? eq.crNueva : cr;
-    totalNuevo += crPorMateria[m];
+    // Solo suma un módulo al total
+    if (!esModulo) {
+      totalNuevo += crPorMateria[m];
+    } else if (!bloquesModulo.includes(bloque)) {
+      bloquesModulo.push(bloque);
+    }
   }
 }
+
+// Suma créditos de un solo módulo (todos tienen el mismo número de materias y créditos)
+let modulosSumados = 0;
+for (const [bloque, materias] of Object.entries(estructuraMalla)) {
+  if (bloque.startsWith('Módulo') && modulosSumados < 2) {
+    for (const m of materias) {
+      totalNuevo += crPorMateria[m];
+    }
+    modulosSumados++;
+  }
+}
+
 
 document.getElementById('cr-total').textContent = totalNuevo;
 document.getElementById('cr-pendientes').textContent = totalNuevo;
