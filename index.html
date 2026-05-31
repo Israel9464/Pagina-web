@@ -364,7 +364,17 @@ const equivalencias = [
   { antigua: "Imagenología médica",                           nueva: "Conectividad cerebral",                        crAnt: 8,  crNueva: 8  },
   { antigua: "Sistemas electrónicos",                         nueva: "Microelectrónica",                             crAnt: 8,  crNueva: 8  },
   { antigua: "Instrumentación y técnicas de rehabilitación",  nueva: "Rehabilitación",                               crAnt: 8,  crNueva: 8  },
-  { antigua: "Dispositivos electrónicos",                     nueva: "Dispositivos usables y vestibles",             crAnt: 8,  crNueva: 8  }
+  { antigua: "Dispositivos electrónicos",                     nueva: "Dispositivos usables y vestibles",             crAnt: 8,  crNueva: 8  },
+  { antigua: "Biomateriales",              crAnt: 8 },
+  { antigua: "Electrónica integrada",      crAnt: 8 },
+  { antigua: "Seminario de solución de problemas de Métodos matemáticos I",        crAnt: 5 },
+  { antigua: "Seminario de solución de problemas de Métodos matemáticos II",       crAnt: 5 },
+  { antigua: "Seminario de solución de problemas de Métodos matemáticos III",      crAnt: 5 },
+  { antigua: "Seminario de solución de problemas de Anatomía mecánica I",          crAnt: 5 },
+  { antigua: "Seminario de solución de problemas de Anatomía mecánica II",         crAnt: 5 },
+  { antigua: "Seminario de solución de problemas de Análisis del movimiento",      crAnt: 5 },
+  { antigua: "Seminario de solución de problemas de Programación de sistemas embebidos", crAnt: 5 },
+  { antigua: "Seminario de solución de problemas de Programación", crAnt: 5 },
 ];
 
 // ─────────────────────────────────────────────
@@ -613,8 +623,8 @@ function actualizar() {
 
   document.querySelectorAll('#check-list input:checked').forEach(chk => {
     const nueva    = chk.dataset.nueva;
-    const cAnt     = parseInt(chk.dataset.crAnt);
-    const cNueva   = parseInt(chk.dataset.crNueva);
+    const cAnt     = parseInt(chk.dataset.crAnt) || 0;
+    const cNueva   = parseInt(chk.dataset.crNueva) || 0;
     crAnt  += cAnt;
     crConv += cNueva;
 
