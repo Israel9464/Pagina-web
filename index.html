@@ -346,6 +346,7 @@ const equivalencias = [
   { antigua: "Anatomía mecánica I",                           nueva: "Anatomía",                                     crAnt: 8,  crNueva: 8  },
   { antigua: "Métodos matemáticos I",                         nueva: "Cálculo diferencial e integral",               crAnt: 8,  crNueva: 8  },
   { antigua: "Métodos matemáticos II",                        nueva: "Ecuaciones diferenciales",                     crAnt: 8,  crNueva: 8  },
+  { antigua: "Métodos matemáticos III",              crAnt: 8 },
   { antigua: "Instalaciones y seguridad radiológica",         nueva: "Legislación y seguridad hospitalaria",         crAnt: 8,  crNueva: 10 },
   { antigua: "Estadística y procesos estocásticos",           nueva: "Estadística experimental",                     crAnt: 8,  crNueva: 8  },
   { antigua: "Instrumentación Diagnóstica y Terapéutica",     nueva: "Tecnologías médicas",                          crAnt: 8,  crNueva: 8  },
@@ -362,33 +363,32 @@ const equivalencias = [
   { antigua: "Prótesis y órtesis",                            nueva: "Prótesis y órtesis",                           crAnt: 8,  crNueva: 8  },
   { antigua: "Análisis del movimiento",                       nueva: "Análisis del movimiento",                      crAnt: 8,  crNueva: 8  },
   { antigua: "Imagenología médica",                           nueva: "Conectividad cerebral",                        crAnt: 8,  crNueva: 8  },
-  { antigua: "Sistemas electrónicos",                         nueva: "Microelectrónica",                             crAnt: 8,  crNueva: 8  },
+  { antigua: "Sistemas electrónicos",                         nueva: "Electrónica digital",                             crAnt: 8,  crNueva: 8  },
   { antigua: "Instrumentación y técnicas de rehabilitación",  nueva: "Rehabilitación",                               crAnt: 8,  crNueva: 8  },
   { antigua: "Dispositivos electrónicos",                     nueva: "Dispositivos usables y vestibles",             crAnt: 8,  crNueva: 8  },
   //Nuevas equivalencias
-  { antigua: "Carta de Liberación de Prácticas Profesionales o Comprobantes de experiencia profesional (320 Hrs)",   nueva: "Practicas profesionales",             crAnt: 20,  crNueva: 20  }, 
+  { antigua: "Carta de Liberación de Prácticas Profesionales o Comprobantes de experiencia profesional (320 Hrs)",   nueva: "Practicas profesionales",             crAnt: 0,  crNueva: 20  }, 
   { antigua: "Proyecto de Instrumenteción Médica",            nueva: ["Seminario de integración: Protocolo","Laboratorio Abierto: Diseño"],         crAnt: 15, crNueva: 7  },
   { antigua: "Proyecto de Biomecánica Humana",                nueva: ["Seminario de integración: Desarrollo","Laboratorio Abierto: Construcción"],          crAnt: 15, crNueva: 9  },
   { antigua: "⁠Proyecto de Electrofisiologia",                 nueva: ["Seminario de integración: Comunicación","Laboratorio Abierto: Pruebas"],          crAnt: 15, crNueva: 7  },
   //sin equivalencia del plan nuevo
-  { antigua: "Biomateriales",              crAnt: 8 },
+  { antigua: "Biomateriales", nueva: "Biointegración de materiales",             crAnt: 8, crNueva: 8 }, 
   { antigua: "Electrónica integrada",      crAnt: 8 },
-  { antigua: "Seminario de solución de problemas de Métodos matemáticos I",        crAnt: 5 },
-  { antigua: "Seminario de solución de problemas de Métodos matemáticos II",       crAnt: 5 },
+  { antigua: "Seminario de solución de problemas de Métodos matemáticos I", nueva:"Precálculo",       crAnt: 5, crNueva: 8 },
+  { antigua: "Seminario de solución de problemas de Métodos matemáticos II", nueva:"Álgebra lineal",      crAnt: 5, crNueva: 8 },
   { antigua: "Seminario de solución de problemas de Métodos matemáticos III",      crAnt: 5 },
   { antigua: "Seminario de solución de problemas de Anatomía mecánica I",          crAnt: 5 },
   { antigua: "Seminario de solución de problemas de Anatomía mecánica II",         crAnt: 5 },
   { antigua: "Seminario de solución de problemas de Análisis del movimiento",      crAnt: 5 },
   { antigua: "Seminario de solución de problemas de Programación de sistemas embebidos", crAnt: 5 },
-  { antigua: "Seminario de solución de problemas de Programación", crAnt: 5 },
+  { antigua: "Seminario de solución de problemas de Programación", nueva:"Programación estructurada", crAnt: 5, crNueva: 8 },
   { antigua: "Formación Optativa abierta", crAnt: 16 },
   { antigua: "⁠Formación Especializante selectiva", crAnt: 16 },
 ];
 
-// ─────────────────────────────────────────────
-// MALLA NUEVA (LIB) — créditos según PDF 2026
+
 // Materias con crédito distinto de 8 especificados
-// ─────────────────────────────────────────────
+
 const creditosEspeciales = {
    // Extras
   "Formacion integral":                             4,
