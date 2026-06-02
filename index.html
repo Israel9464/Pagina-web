@@ -365,6 +365,12 @@ const equivalencias = [
   { antigua: "Sistemas electrónicos",                         nueva: "Microelectrónica",                             crAnt: 8,  crNueva: 8  },
   { antigua: "Instrumentación y técnicas de rehabilitación",  nueva: "Rehabilitación",                               crAnt: 8,  crNueva: 8  },
   { antigua: "Dispositivos electrónicos",                     nueva: "Dispositivos usables y vestibles",             crAnt: 8,  crNueva: 8  },
+  //Nuevas equivalencias
+  { antigua: "Carta de Liberación de Prácticas Profesionales o Comprobantes de experiencia profesional (320 Hrs)",   nueva: "Practicas profesionales",             crAnt: 20,  crNueva: 20  }, 
+  { antigua: "Proyecto de Instrumenteción Médica",            nueva: ["Seminario de integración: Protocolo","Laboratorio Abierto: Diseño"],         crAnt: 15, crNueva: 7  },
+  { antigua: "Proyecto de Biomecánica Humana",                nueva: ["Seminario de integración: Desarrollo","Laboratorio Abierto: Construcción"],          crAnt: 15, crNueva: 9  },
+  { antigua: "⁠Proyecto de Electrofisiologia",                 nueva: ["Seminario de integración: Comunicación","Laboratorio Abierto: Pruebas"],          crAnt: 15, crNueva: 7  },
+  //sin equivalencia del plan nuevo
   { antigua: "Biomateriales",              crAnt: 8 },
   { antigua: "Electrónica integrada",      crAnt: 8 },
   { antigua: "Seminario de solución de problemas de Métodos matemáticos I",        crAnt: 5 },
@@ -375,6 +381,8 @@ const equivalencias = [
   { antigua: "Seminario de solución de problemas de Análisis del movimiento",      crAnt: 5 },
   { antigua: "Seminario de solución de problemas de Programación de sistemas embebidos", crAnt: 5 },
   { antigua: "Seminario de solución de problemas de Programación", crAnt: 5 },
+  { antigua: "Formación Optativa abierta", crAnt: 16 },
+  { antigua: "⁠Formación Especializante selectiva", crAnt: 16 },
 ];
 
 // ─────────────────────────────────────────────
@@ -573,7 +581,10 @@ equivalencias.forEach(eq => {
   const label = document.createElement('label');
   label.className = 'materia-check';
   label.innerHTML = `
-    <input type="checkbox" data-nueva="${eq.nueva}" data-cr-ant="${eq.crAnt}" data-cr-nueva="${eq.crNueva}">
+    <input type="checkbox" 
+        data-nueva="${Array.isArray(eq.nueva) ? eq.nueva.join('|') : (eq.nueva || '')}" 
+        data-cr-ant="${eq.crAnt}" 
+        data-cr-nueva="${eq.crNueva || 0}">
     <span class="check-name">${eq.antigua}</span>
     <span class="check-cr">${eq.crAnt} CR</span>
   `;
@@ -622,17 +633,37 @@ function actualizar() {
   let crAnt = 0, crConv = 0;
 
   document.querySelectorAll('#check-list input:checked').forEach(chk => {
-    const nueva    = chk.dataset.nueva;
-    const cAnt     = parseInt(chk.dataset.crAnt) || 0;
-    const cNueva   = parseInt(chk.dataset.crNueva) || 0;
+    const nueva  = chk.dataset.nueva;
+    const cAnt   = parseInt(chk.dataset.crAnt) || 0;
+    const cNueva = parseInt(chk.dataset.crNueva) || 0;
     crAnt  += cAnt;
     crConv += cNueva;
 
-    const id   = 'nodo-' + nueva.replace(/[^a-zA-Z0-9]/g, '');
-    const nodo = document.getElementById(id);
-    if (nodo) nodo.classList.add('active');
+    // Soporta una o varias equivalencias
+    const nuevas = nueva ? nueva.split('|') : [];
+    nuevas.forEach(n => {
+        const proyectos = [
+    "Proyecto de Instrumenteción Médica",
+    "Proyecto de Biomecánica Humana",
+    "⁠Proyecto de Electrofisiologia"
+];
+
+const tieneTresProyectos = proyectos.every(nombre =>
+    [...document.querySelectorAll('#check-list input:checked')]
+        .some(chk => chk.closest('.materia-check').querySelector('.check-name').textContent.trim() === nombre)
+);
+
+if (tieneTresProyectos) {
+    const nodoProyecto = document.getElementById('nodo-' + 'Proyecto modular'.replace(/[^a-zA-Z0-9]/g, ''));
+    if (nodoProyecto) nodoProyecto.classList.add('active');
+}
+        const id   = 'nodo-' + n.trim().replace(/[^a-zA-Z0-9]/g, '');
+        const nodo = document.getElementById(id);
+        if (nodo) nodo.classList.add('active');
+    });
+
     chk.closest('.materia-check').classList.add('checked');
-  });
+});
 
   const pct = totalNuevo > 0 ? (crConv / totalNuevo * 100).toFixed(1) : 0;
 
