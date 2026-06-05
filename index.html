@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malla Curricular Interactiva - Biomedicina</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
     <style>
         :root {
             --primary: #1e3a8a;
@@ -35,7 +34,6 @@
             gap: 25px;
         }
 
-        /* ── Sidebar ── */
         .sidebar {
             background: white;
             padding: 20px;
@@ -61,6 +59,18 @@
             margin-bottom: 12px;
         }
 
+        .semestre-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            background: #eff6ff;
+            border-radius: 6px;
+            padding: 5px 10px;
+            margin: 12px 0 6px 0;
+        }
+
         .materia-check {
             display: flex;
             align-items: flex-start;
@@ -82,7 +92,8 @@
             color: #065f46;
         }
 
-        .materia-check input {
+        .materia-check input[type="checkbox"],
+        .materia-check input[type="radio"] {
             accent-color: var(--success);
             width: 15px;
             height: 15px;
@@ -101,7 +112,7 @@
 
         .materia-check.checked .check-cr { color: #059669; }
 
-        /* ── Header / Stats ── */
+        /* Header */
         .malla-header {
             background: white;
             padding: 18px 24px;
@@ -138,12 +149,7 @@
             letter-spacing: 0.3px;
         }
 
-        .stat-value {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
         .stat-value.blue  { color: #2563eb; }
         .stat-value.green { color: #059669; }
         .stat-value.amber { color: #d97706; }
@@ -172,11 +178,18 @@
             margin-top: 5px;
         }
 
-        /* ── Malla grid ── */
+        /* Malla */
         .malla-canvas {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .sidebar { position: static; max-height: 300px; }
+            .malla-canvas { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         .semestre-block {
@@ -187,13 +200,8 @@
             border-top: 4px solid var(--primary-light);
         }
 
-        .semestre-block.modulo-block {
-            border-top-color: #8b5cf6;
-        }
-
-        .semestre-block.extra-block {
-            border-top-color: #f59e0b;
-        }
+        .semestre-block.modulo-block { border-top-color: #8b5cf6; }
+        .semestre-block.extra-block  { border-top-color: #f59e0b; }
 
         .semestre-block h4 {
             margin: 0 0 12px 0;
@@ -243,6 +251,22 @@
 
         .nodo-materia.active .meta { color: var(--success-text); }
 
+        .pct-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            border-radius: 99px;
+            padding: 2px 8px;
+            font-size: 0.70rem;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: all 0.4s ease;
+        }
+
+        .nodo-materia.active .pct-badge {
+            background: #065f46;
+            color: #d1fae5;
+        }
+
         .cr-bar {
             height: 3px;
             background: #e2e8f0;
@@ -271,31 +295,26 @@
             transition: all 0.3s ease;
         }
 
-        .nodo-materia.active .status-icon {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .nodo-materia.active .status-icon { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <h3><i class="fa-solid fa-graduation-cap"></i> Plan anterior cursado</h3>
         <p>Marca las materias que el alumno ya aprobó para ver cuántos créditos se convalidan en el nuevo plan.</p>
         <div id="check-list"></div>
-        
+        <div id="titulacion-list">
+            <label class="materia-check">
+            </label>
+        </div>
     </div>
 
-    <!-- Main content -->
     <div>
-
-        <!-- Header stats -->
         <div class="malla-header">
             <h2>Malla Curricular LIB — Comparativa de créditos</h2>
-
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label"><i class="fa-solid fa-clock-rotate-left"></i> Créditos plan anterior</div>
@@ -314,7 +333,6 @@
                     <div class="stat-value gray" id="cr-total">—</div>
                 </div>
             </div>
-
             <div class="progress-bar-wrap">
                 <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
             </div>
@@ -324,103 +342,110 @@
             </div>
         </div>
 
-        <!-- Malla visual -->
         <div class="malla-canvas" id="malla-visual"></div>
     </div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────
-// EQUIVALENCIAS
-// Créditos corregidos según PDF plan antiguo:
-//   Instalaciones y seguridad radiológica  → 8 CR
-//   Electrofisiología molecular I          → 8 CR
-//   Electrofisiología molecular II         → 8 CR
-// Nombre corregido según PDF plan nuevo:
-//   "Señales y sistemas robóticos" (no "en")
-//   "Circuitos eléctricos" (nombre idéntico en ambos planes)
-// ─────────────────────────────────────────────
-const equivalencias = [
-  { antigua: "Programación",                                  nueva: "Fundamentos de programación",                  crAnt: 8,  crNueva: 8  },
-  { antigua: "Anatomía mecánica II",                          nueva: "Biomecánica",                                  crAnt: 8,  crNueva: 8  },
-  { antigua: "Anatomía mecánica I",                           nueva: "Anatomía",                                     crAnt: 8,  crNueva: 8  },
-  { antigua: "Métodos matemáticos I",                         nueva: "Cálculo diferencial e integral",               crAnt: 8,  crNueva: 8  },
-  { antigua: "Métodos matemáticos II",                        nueva: "Ecuaciones diferenciales",                     crAnt: 8,  crNueva: 8  },
-  { antigua: "Métodos matemáticos III",              crAnt: 8 },
-  { antigua: "Instalaciones y seguridad radiológica",         nueva: "Legislación y seguridad hospitalaria",         crAnt: 8,  crNueva: 10 },
-  { antigua: "Estadística y procesos estocásticos",           nueva: "Estadística experimental",                     crAnt: 8,  crNueva: 8  },
-  { antigua: "Instrumentación Diagnóstica y Terapéutica",     nueva: "Tecnologías médicas",                          crAnt: 8,  crNueva: 8  },
-  { antigua: "Circuitos eléctricos",                          nueva: "Circuitos eléctricos",                         crAnt: 8,  crNueva: 8  },
-  { antigua: "Acondicionamiento de bioseñales y bioimágenes", nueva: "Señales y sistemas robóticos",                 crAnt: 8,  crNueva: 8  },
-  { antigua: "Instrumentación e instalación hospitalaria",    nueva: "Instrumentación e instalación hospitalaria",   crAnt: 8,  crNueva: 8  },
-  { antigua: "Procesamiento de bioseñales",                   nueva: "Procesamiento de bioseñales",                  crAnt: 8,  crNueva: 8  },
-  { antigua: "Procesamiento de bioimágenes",                  nueva: "Procesamiento de bioimágenes",                 crAnt: 8,  crNueva: 8  },
-  { antigua: "Instrumentación e instalación quirúrgica",      nueva: "Gestión e instrumentación biomédica",          crAnt: 8,  crNueva: 8  },
-  { antigua: "Electrofisiología molecular I",                 nueva: "Fisiología y fisiopatología",                  crAnt: 8,  crNueva: 10 },
-  { antigua: "Electrofisiología molecular II",                nueva: "Electrofisiología y neurociencias",            crAnt: 8,  crNueva: 10 },
-  { antigua: "Biosensores y transductores",                   nueva: "Biosensores y transductores",                  crAnt: 8,  crNueva: 8  },
-  { antigua: "Programación de sistemas embebidos",            nueva: "Comunicación y control de sistemas embebidos", crAnt: 8,  crNueva: 8  },
-  { antigua: "Prótesis y órtesis",                            nueva: "Prótesis y órtesis",                           crAnt: 8,  crNueva: 8  },
-  { antigua: "Análisis del movimiento",                       nueva: "Análisis del movimiento",                      crAnt: 8,  crNueva: 8  },
-  { antigua: "Imagenología médica",                           nueva: "Conectividad cerebral",                        crAnt: 8,  crNueva: 8  },
-  { antigua: "Sistemas electrónicos",                         nueva: "Electrónica digital",                             crAnt: 8,  crNueva: 8  },
-  { antigua: "Instrumentación y técnicas de rehabilitación",  nueva: "Rehabilitación",                               crAnt: 8,  crNueva: 8  },
-  { antigua: "Dispositivos electrónicos",                     nueva: "Dispositivos usables y vestibles",             crAnt: 8,  crNueva: 8  },
-  //Nuevas equivalencias
-  { antigua: "Carta de Liberación de Prácticas Profesionales o Comprobantes de experiencia profesional (320 Hrs)",   nueva: "Practicas profesionales",             crAnt: 0,  crNueva: 20  }, 
-  { antigua: "Proyecto de Instrumenteción Médica",            nueva: ["Seminario de integración: Protocolo","Laboratorio Abierto: Diseño"],         crAnt: 15, crNueva: 7  },
-  { antigua: "Proyecto de Biomecánica Humana",                nueva: ["Seminario de integración: Desarrollo","Laboratorio Abierto: Construcción"],          crAnt: 15, crNueva: 9  },
-  { antigua: "⁠Proyecto de Electrofisiologia",                 nueva: ["Seminario de integración: Comunicación","Laboratorio Abierto: Pruebas"],          crAnt: 15, crNueva: 7  },
-  //sin equivalencia del plan nuevo
-  { antigua: "Biomateriales", nueva: "Biointegración de materiales",             crAnt: 8, crNueva: 8 }, 
-  { antigua: "Electrónica integrada",      crAnt: 8 },
-  { antigua: "Seminario de solución de problemas de Métodos matemáticos I", nueva:"Precálculo",       crAnt: 5, crNueva: 8 },
-  { antigua: "Seminario de solución de problemas de Métodos matemáticos II", nueva:"Álgebra lineal",      crAnt: 5, crNueva: 8 },
-  { antigua: "Seminario de solución de problemas de Métodos matemáticos III",      crAnt: 5 },
-  { antigua: "Seminario de solución de problemas de Anatomía mecánica I",          crAnt: 5 },
-  { antigua: "Seminario de solución de problemas de Anatomía mecánica II",         crAnt: 5 },
-  { antigua: "Seminario de solución de problemas de Análisis del movimiento",      crAnt: 5 },
-  { antigua: "Seminario de solución de problemas de Programación de sistemas embebidos", crAnt: 5 },
-  { antigua: "Seminario de solución de problemas de Programación", nueva:"Programación estructurada", crAnt: 5, crNueva: 8 },
-  { antigua: "Formación Optativa abierta", crAnt: 16 },
-  { antigua: "⁠Formación Especializante selectiva", crAnt: 16 },
-];
-
-
-// Materias con crédito distinto de 8 especificados
-
-const creditosEspeciales = {
-   // Extras
-  "Formacion integral":                             4,
-  "Practicas profesionales":                       20,
-  "Proyecto modular":                               3,
-  // Semestre I
-  "Inducción universitaria":                        5,
-  "Análisis de problemas globales del siglo XX":    0,
-  // Semestre II
-  "Legislación y seguridad hospitalaria":           10,
-  "Historia de la tecnología, el arte y la sociedad": 3,
-  // Semestre III
-  "Ciencia y sustentabilidad":                      5,
-  // Semestre V
-  "Administración de negocios":                     5,
-  "Electrofisiología y neurociencias":              10,
-  "Fisiología y fisiopatología":                    10,
-  // Semestre VII
-  "Innovación tecnológica y emprendimiento":        5,
-  // Semestre IX
-  "Ciencias ómicas":                                10,
-  "Biomedicina de precisión":                       10,
-  // Seminarios de integración
-  "Seminario de integración: Protocolo":            4,
-  "Seminario de integración: Desarrollo":           6,
-  "Seminario de integración: Comunicación":         4,
-  // Laboratorios abiertos
-  "Laboratorio Abierto: Diseño":                    3,
-  "Laboratorio Abierto: Construcción":              3,
-  "Laboratorio Abierto: Pruebas":                   3,
+//Equivalencias agrupadas por semestre
+const equivalenciasPorSemestre = {
+  "Semestre 1": [
+    { antigua: "Métodos matemáticos I",                          nueva: "Cálculo diferencial e integral",               crAnt: 8,  crNueva: 8  },
+    { antigua: "Seminario de solución de problemas de Métodos matemáticos I",  nueva: "Precálculo",                    crAnt: 5,  crNueva: 8  },
+    { antigua: "Anatomía mecánica I",                            nueva: "Anatomía",                                     crAnt: 8,  crNueva: 8  },
+    { antigua: "Seminario de solución de problemas de Anatomía mecánica I",                                             crAnt: 5  },
+    { antigua: "Programación",                                   nueva: "Fundamentos de programación",                  crAnt: 8,  crNueva: 8  },
+    { antigua: "Seminario de solución de problemas de Programación", nueva: "Programación estructurada",               crAnt: 5,  crNueva: 8  },
+  ],
+  "Semestre 2": [
+    { antigua: "Métodos matemáticos II",                         nueva: "Ecuaciones diferenciales",                     crAnt: 8,  crNueva: 8  },
+    { antigua: "Seminario de solución de problemas de Métodos matemáticos II", nueva: "Álgebra lineal",                 crAnt: 5,  crNueva: 8  },
+    { antigua: "Anatomía mecánica II",                           nueva: "Biomecánica",                                  crAnt: 8,  crNueva: 8  },
+    { antigua: "Seminario de solución de problemas de Anatomía mecánica II",                                            crAnt: 5  },
+    { antigua: "Circuitos eléctricos",                           nueva: "Circuitos eléctricos",                         crAnt: 8,  crNueva: 8  },
+    { antigua: "Instrumentación e instalación hospitalaria",     nueva: "Instrumentación e instalación hospitalaria",   crAnt: 8,  crNueva: 8  },
+  ],
+  "Semestre 3": [
+    { antigua: "Métodos matemáticos III",                                                                               crAnt: 8  },
+    { antigua: "Seminario de solución de problemas de Métodos matemáticos III",                                         crAnt: 5  },   
+    { antigua: "Instrumentación Diagnóstica y Terapéutica",      nueva: "Tecnologías médicas",                          crAnt: 8,  crNueva: 8  },   
+    { antigua: "Instrumentación e instalación quirúrgica",       nueva: "Gestión e instrumentación biomédica",          crAnt: 8,  crNueva: 8  },
+    { antigua: "Dispositivos electrónicos",                      nueva: "Dispositivos usables y vestibles",             crAnt: 8,  crNueva: 8  },
+  ],
+  "Semestre 4": [
+    { antigua: "Estadística y procesos estocásticos",            nueva: "Estadística experimental",                     crAnt: 8,  crNueva: 8  },
+    { antigua: "Análisis del movimiento",                        nueva: "Análisis del movimiento",                      crAnt: 8,  crNueva: 8  },    
+    { antigua: "Programación de sistemas embebidos",             nueva: "Comunicación y control de sistemas embebidos", crAnt: 8,  crNueva: 8  },    
+    { antigua: "Formación Optativa abierta",                                                                            crAnt: 16 },
+    { antigua: "Formación Especializante selectiva",                                                                    crAnt: 16 },
+    { antigua: "Electrónica integrada",                                                                                 crAnt: 8  },
+    { antigua: "Instalaciones y seguridad radiológica",          nueva: "Legislación y seguridad hospitalaria",         crAnt: 8,  crNueva: 10 },
+  ],
+  "Semestre 5": [    
+    { antigua: "Biosensores y transductores",                    nueva: "Biosensores y transductores",                  crAnt: 8,  crNueva: 8  },    
+    { antigua: "Seminario de solución de problemas de Análisis del movimiento",                                         crAnt: 5  },
+    { antigua: "Prótesis y órtesis",                             nueva: "Prótesis y órtesis",                           crAnt: 8,  crNueva: 8  },
+    { antigua: "Instrumentación y técnicas de rehabilitación",   nueva: "Rehabilitación",                               crAnt: 8,  crNueva: 8  },
+    { antigua: "Seminario de solución de problemas de Programación de sistemas embebidos",                              crAnt: 5  },
+  ],
+  "Semestre 6": [
+    { antigua: "Electrofisiología molecular I",                  nueva: "Fisiología y fisiopatología",                  crAnt: 8,  crNueva: 10 },
+    { antigua: "Biomateriales",                                  nueva: "Biointegración de materiales",                 crAnt: 8,  crNueva: 8  },
+    { antigua: "Imagenología médica",                            nueva: "Conectividad cerebral",                        crAnt: 8,  crNueva: 8  },
+    { antigua: "Sistemas electrónicos",                          nueva: "Electrónica digital",                          crAnt: 8,  crNueva: 8  },
+    
+    
+  ],
+  "Semestre 7": [
+    { antigua: "Electrofisiología molecular II",                 nueva: "Electrofisiología y neurociencias",            crAnt: 8,  crNueva: 10 },
+    { antigua: "Acondicionamiento de bioseñales y bioimágenes",  nueva: "Señales y sistemas robóticos",                 crAnt: 8,  crNueva: 8  },
+    { antigua: "Proyecto de Instrumentación Médica",             nueva: ["Seminario de integración: Protocolo","Laboratorio Abierto: Diseño"],        crAnt: 15, crNueva: 7  },
+    { antigua: "Proyecto de Biomecánica Humana",                 nueva: ["Seminario de integración: Desarrollo","Laboratorio Abierto: Construcción"], crAnt: 15, crNueva: 9  },
+    { antigua: "Proyecto de Electrofisiologia",                  nueva: ["Seminario de integración: Comunicación","Laboratorio Abierto: Pruebas"],    crAnt: 15, crNueva: 7  },
+    
+    
+  ],
+  "Semestre 8": [
+    { antigua: "Procesamiento de bioseñales",                    nueva: "Procesamiento de bioseñales",                  crAnt: 8,  crNueva: 8  },
+    { antigua: "Procesamiento de bioimágenes",                   nueva: "Procesamiento de bioimágenes",                 crAnt: 8,  crNueva: 8  },
+  ],
+  "Extra": [
+    { antigua: "Carta de Liberación de Prácticas Profesionales o Comprobantes de experiencia profesional (320 Hrs)", nueva: "Practicas profesionales", crAnt: 0, crNueva: 20 },
+  ],
+  "Optativas": [
+    { antigua: "Instrumentacion medica III", nueva: "Administración de negocios", crAnt: 0, crNueva: 5 },
+    { antigua: "Instrumentacion medica II", nueva: "Regulación de biomateriales", crAnt: 0, crNueva: 8 },
+    { antigua: "Instrumentacion medica IV", nueva: "Tecnología de la información en salud", crAnt: 0, crNueva: 8 },
+  ],
 };
 
+const equivalencias = Object.values(equivalenciasPorSemestre).flat();
+
+// Créditos especiales del plan nuevo 
+const creditosEspeciales = {
+  "Formacion integral":                                     4,
+  "Practicas profesionales":                               20,
+  "Proyecto modular":                                       3,
+  "Inducción universitaria":                                5,
+  "Análisis de problemas globales del siglo XX":            0,
+  "Legislación y seguridad hospitalaria":                  10,
+  "Historia de la tecnología, el arte y la sociedad":       3,
+  "Ciencia y sustentabilidad":                              5,
+  "Administración de negocios":                             5,
+  "Electrofisiología y neurociencias":                     10,
+  "Fisiología y fisiopatología":                           10,
+  "Innovación tecnológica y emprendimiento":                5,
+  "Ciencias ómicas":                                       10,
+  "Biomedicina de precisión":                              10,
+  "Seminario de integración: Protocolo":                    4,
+  "Seminario de integración: Desarrollo":                   6,
+  "Seminario de integración: Comunicación":                 4,
+  "Laboratorio Abierto: Diseño":                            3,
+  "Laboratorio Abierto: Construcción":                      3,
+  "Laboratorio Abierto: Pruebas":                           3,
+};
+
+// ── Estructura de la malla nueva (respetando tu versión) ──
 const estructuraMalla = {
   "Extras": [
     "Formacion integral",
@@ -469,18 +494,17 @@ const estructuraMalla = {
   "Sexto Semestre": [
     "Gestión e instrumentación biomédica",
     "Biosensores y transductores",
-    "Seminario de integración: Protocolo",
-    
+    "Seminario de integración: Protocolo"
   ],
   "Séptimo Semestre": [
-    "Tecnología de la información en salud", 
+    "Tecnología de la información en salud",
     "Seminario de integración: Desarrollo",
     "Laboratorio Abierto: Diseño"
   ],
   "Octavo Semestre": [
     "Ingeniería clínica",
     "Innovación tecnológica y emprendimiento",
-    "Laboratorio Abierto: Construcción" 
+    "Laboratorio Abierto: Construcción"
   ],
   "Noveno Semestre": [
     "Ciencias ómicas",
@@ -540,10 +564,10 @@ const estructuraMalla = {
   ]
 };
 
-// ── Calcular créditos del plan nuevo ──
+// Calcular créditos del plan nuevo (obligatorias + 2 módulos)
 let totalNuevo = 0;
 const crPorMateria = {};
-const bloquesModulo = [];
+let modulosSumados = 0;
 
 for (const [bloque, materias] of Object.entries(estructuraMalla)) {
   const esModulo = bloque.startsWith('Módulo');
@@ -551,60 +575,61 @@ for (const [bloque, materias] of Object.entries(estructuraMalla)) {
     const cr = creditosEspeciales[m] !== undefined ? creditosEspeciales[m] : 8;
     const eq = equivalencias.find(x => x.nueva === m);
     crPorMateria[m] = eq ? eq.crNueva : cr;
-    // Solo suma un módulo al total
-    if (!esModulo) {
-      totalNuevo += crPorMateria[m];
-    } else if (!bloquesModulo.includes(bloque)) {
-      bloquesModulo.push(bloque);
-    }
+    if (!esModulo) totalNuevo += crPorMateria[m];
   }
-}
-
-// Suma créditos de un solo módulo (todos tienen el mismo número de materias y créditos)
-let modulosSumados = 0;
-for (const [bloque, materias] of Object.entries(estructuraMalla)) {
-  if (bloque.startsWith('Módulo') && modulosSumados < 2) {
-    for (const m of materias) {
-      totalNuevo += crPorMateria[m];
-    }
+  if (esModulo && modulosSumados < 2) {
+    for (const m of materias) totalNuevo += crPorMateria[m];
     modulosSumados++;
   }
 }
 
-
-document.getElementById('cr-total').textContent = totalNuevo;
+document.getElementById('cr-total').textContent     = totalNuevo;
 document.getElementById('cr-pendientes').textContent = totalNuevo;
 
-// ── Sidebar: checkboxes ──
+//checkboxes agrupados por semestre 
 const checkList = document.getElementById('check-list');
-equivalencias.forEach(eq => {
-  const label = document.createElement('label');
-  label.className = 'materia-check';
-  label.innerHTML = `
-    <input type="checkbox" 
-        data-nueva="${Array.isArray(eq.nueva) ? eq.nueva.join('|') : (eq.nueva || '')}" 
-        data-cr-ant="${eq.crAnt}" 
-        data-cr-nueva="${eq.crNueva || 0}">
-    <span class="check-name">${eq.antigua}</span>
-    <span class="check-cr">${eq.crAnt} CR</span>
-  `;
-  label.querySelector('input').addEventListener('change', actualizar);
-  checkList.appendChild(label);
-});
 
-// ── Malla visual ──
+for (const [semestre, materias] of Object.entries(equivalenciasPorSemestre)) {
+  const header = document.createElement('div');
+  header.className = 'semestre-header';
+  header.textContent = semestre;
+  checkList.appendChild(header);
+
+  materias.forEach(eq => {
+    const crNueva = eq.nueva
+      ? (Array.isArray(eq.nueva)
+          ? eq.nueva.reduce((sum, m) => sum + (crPorMateria[m] || 0), 0)
+          : (crPorMateria[eq.nueva] || 0))
+      : 0;
+
+    const label = document.createElement('label');
+    label.className = 'materia-check';
+    label.innerHTML = `
+      <input type="checkbox"
+        data-nueva="${Array.isArray(eq.nueva) ? eq.nueva.join('|') : (eq.nueva || '')}"
+        data-cr-ant="${eq.crAnt}"
+        data-cr-nueva="${crNueva}">
+      <span class="check-name">${eq.antigua}</span>
+      <span class="check-cr">${eq.crAnt} CR</span>
+    `;
+    label.querySelector('input').addEventListener('change', actualizar);
+    checkList.appendChild(label);
+  });
+}
+
+// Malla visual
 const mallaVisual = document.getElementById('malla-visual');
 function construirMalla() {
   mallaVisual.innerHTML = '';
   for (const [bloque, materias] of Object.entries(estructuraMalla)) {
     const esModulo = bloque.startsWith('Módulo');
-    const esExtra  = false;
+    const esExtra  = bloque === 'Extras';
     const div = document.createElement('div');
-    div.className = 'semestre-block' + (esModulo ? ' modulo-block' : '');
+    div.className = 'semestre-block' + (esModulo ? ' modulo-block' : '') + (esExtra ? ' extra-block' : '');
     div.innerHTML = `<h4>${bloque}</h4>`;
 
     materias.forEach(m => {
-      const cr  = crPorMateria[m];
+      const cr  = crPorMateria[m] !== undefined ? crPorMateria[m] : 8;
       const pct = totalNuevo > 0 ? (cr / totalNuevo * 100).toFixed(2) : 0;
       const id  = 'nodo-' + m.replace(/[^a-zA-Z0-9]/g, '');
       const nodo = document.createElement('div');
@@ -615,7 +640,7 @@ function construirMalla() {
         <div class="title">${m}</div>
         <div class="meta">
           <span><i class="fa-solid fa-bookmark"></i> ${cr} CR</span>
-          <span>${pct}% del plan</span>
+          <span class="pct-badge">${pct}% del plan</span>
         </div>
         <div class="cr-bar"><div class="cr-bar-fill" style="width:${pct}%"></div></div>
       `;
@@ -626,6 +651,7 @@ function construirMalla() {
   }
 }
 
+//Función actualizar
 function actualizar() {
   document.querySelectorAll('.nodo-materia').forEach(n => n.classList.remove('active'));
   document.querySelectorAll('.materia-check').forEach(l => l.classList.remove('checked'));
@@ -639,39 +665,48 @@ function actualizar() {
     crAnt  += cAnt;
     crConv += cNueva;
 
-    // Soporta una o varias equivalencias
     const nuevas = nueva ? nueva.split('|') : [];
     nuevas.forEach(n => {
-        const proyectos = [
-    "Proyecto de Instrumenteción Médica",
-    "Proyecto de Biomecánica Humana",
-    "⁠Proyecto de Electrofisiologia"
-];
-
-const tieneTresProyectos = proyectos.every(nombre =>
-    [...document.querySelectorAll('#check-list input:checked')]
-        .some(chk => chk.closest('.materia-check').querySelector('.check-name').textContent.trim() === nombre)
-);
-
-if (tieneTresProyectos) {
-    const nodoProyecto = document.getElementById('nodo-' + 'Proyecto modular'.replace(/[^a-zA-Z0-9]/g, ''));
-    if (nodoProyecto) nodoProyecto.classList.add('active');
-}
-        const id   = 'nodo-' + n.trim().replace(/[^a-zA-Z0-9]/g, '');
-        const nodo = document.getElementById(id);
-        if (nodo) nodo.classList.add('active');
+      const id   = 'nodo-' + n.trim().replace(/[^a-zA-Z0-9]/g, '');
+      const nodo = document.getElementById(id);
+      if (nodo) nodo.classList.add('active');
     });
 
     chk.closest('.materia-check').classList.add('checked');
-});
+  });
+
+  // Si tiene los 3 proyectos marcados, marcar también Proyecto modular
+  const checkedNames = [...document.querySelectorAll('#check-list input:checked')]
+    .map(chk => chk.closest('.materia-check').querySelector('.check-name').textContent.trim());
+
+  const nombresProyectos = [
+    "Proyecto de Instrumentación Médica",
+    "Proyecto de Biomecánica Humana",
+    "Proyecto de Electrofisiologia"
+  ];
+
+  const tieneTresProyectos = nombresProyectos.every(n => checkedNames.includes(n));
+  if (tieneTresProyectos) {
+    const nodoProyecto = document.getElementById('nodo-' + 'Proyecto modular'.replace(/[^a-zA-Z0-9]/g, ''));
+    if (nodoProyecto) nodoProyecto.classList.add('active');
+    crConv += crPorMateria['Proyecto modular'] || 0;
+  }
+
+  // Si tiene ambos seminarios de anatomía, marcar Fundamentos de física
+  const anatomia1 = checkedNames.includes("Seminario de solución de problemas de Anatomía mecánica I");
+  const anatomia2 = checkedNames.includes("Seminario de solución de problemas de Anatomía mecánica II");
+  if (anatomia1 && anatomia2) {
+    const nodo = document.getElementById('nodo-' + 'Fundamentos de física'.replace(/[^a-zA-Z0-9]/g, ''));
+    if (nodo) nodo.classList.add('active');
+    crConv += crPorMateria['Fundamentos de física'] || 0;
+  }
 
   const pct = totalNuevo > 0 ? (crConv / totalNuevo * 100).toFixed(1) : 0;
-
-  document.getElementById('cr-anterior').textContent    = crAnt;
-  document.getElementById('cr-convalidados').textContent = crConv;
-  document.getElementById('cr-pendientes').textContent   = totalNuevo - crConv;
-  document.getElementById('pct-label').textContent       = pct + '%';
-  document.getElementById('progress-fill').style.width   = pct + '%';
+  document.getElementById('cr-anterior').textContent      = crAnt;
+  document.getElementById('cr-convalidados').textContent  = crConv;
+  document.getElementById('cr-pendientes').textContent    = totalNuevo - crConv;
+  document.getElementById('pct-label').textContent        = pct + '%';
+  document.getElementById('progress-fill').style.width    = pct + '%';
 }
 
 construirMalla();
