@@ -251,6 +251,32 @@
 
         .nodo-materia.active .meta { color: var(--success-text); }
 
+        
+        .competencia {
+            font-size: 0.68rem;
+            line-height: 1.35;
+            color: #64748b;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border-color);
+            text-align: justify;
+            white-space: pre-line;
+        }
+
+        .competencia::before {
+            content: "Competencia";
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #94a3b8;
+            margin-bottom: 3px;
+        }
+
+        .nodo-materia.active .competencia { color: #047857; border-top-color: #6ee7b7; }
+        .nodo-materia.active .competencia::before { color: #059669; }
+
         .pct-badge {
             background: #e0f2fe;
             color: #0369a1;
@@ -304,7 +330,7 @@
 
     <div class="sidebar">
         <h3><i class="fa-solid fa-graduation-cap"></i> Plan anterior cursado</h3>
-        <p>Marca las materias que el alumno ya aprobó para ver cuántos créditos se convalidan en el nuevo plan.</p>
+        <p>Marca las materias que el alumno ya aprob&oacute; para ver cu&aacute;ntos cr&eacute;ditos se convalidan en el nuevo plan.</p>
         <div id="check-list"></div>
         <div id="titulacion-list">
             <label class="materia-check">
@@ -314,23 +340,23 @@
 
     <div>
         <div class="malla-header">
-            <h2>Malla Curricular LIB — Comparativa de créditos</h2>
+            <h2>Malla Curricular LIB &mdash; Comparativa de cr&eacute;ditos</h2>
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label"><i class="fa-solid fa-clock-rotate-left"></i> Créditos plan anterior</div>
+                    <div class="stat-label"><i class="fa-solid fa-clock-rotate-left"></i> Cr&eacute;ditos plan anterior</div>
                     <div class="stat-value blue" id="cr-anterior">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label"><i class="fa-solid fa-circle-check"></i> Créditos convalidados</div>
+                    <div class="stat-label"><i class="fa-solid fa-circle-check"></i> Cr&eacute;ditos convalidados</div>
                     <div class="stat-value green" id="cr-convalidados">0</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label"><i class="fa-solid fa-hourglass-half"></i> Pendientes por cursar</div>
-                    <div class="stat-value amber" id="cr-pendientes">—</div>
+                    <div class="stat-value amber" id="cr-pendientes">&mdash;</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label"><i class="fa-solid fa-bookmark"></i> Total plan nuevo</div>
-                    <div class="stat-value gray" id="cr-total">—</div>
+                    <div class="stat-value gray" id="cr-total">&mdash;</div>
                 </div>
             </div>
             <div class="progress-bar-wrap">
@@ -367,22 +393,22 @@ const equivalenciasPorSemestre = {
   ],
   "Semestre 3": [
     { antigua: "Métodos matemáticos III",                                                                               crAnt: 8  },
-    { antigua: "Seminario de solución de problemas de Métodos matemáticos III",                                         crAnt: 5  },   
-    { antigua: "Instrumentación Diagnóstica y Terapéutica",      nueva: "Tecnologías médicas",                          crAnt: 8,  crNueva: 8  },   
+    { antigua: "Seminario de solución de problemas de Métodos matemáticos III",                                         crAnt: 5  },
+    { antigua: "Instrumentación Diagnóstica y Terapéutica",      nueva: "Tecnologías médicas",                          crAnt: 8,  crNueva: 8  },
     { antigua: "Instrumentación e instalación quirúrgica",       nueva: "Gestión e instrumentación biomédica",          crAnt: 8,  crNueva: 8  },
     { antigua: "Dispositivos electrónicos",                      nueva: "Dispositivos usables y vestibles",             crAnt: 8,  crNueva: 8  },
   ],
   "Semestre 4": [
     { antigua: "Estadística y procesos estocásticos",            nueva: "Estadística experimental",                     crAnt: 8,  crNueva: 8  },
-    { antigua: "Análisis del movimiento",                        nueva: "Análisis del movimiento",                      crAnt: 8,  crNueva: 8  },    
-    { antigua: "Programación de sistemas embebidos",             nueva: "Comunicación y control de sistemas embebidos", crAnt: 8,  crNueva: 8  },    
+    { antigua: "Análisis del movimiento",                        nueva: "Análisis del movimiento",                      crAnt: 8,  crNueva: 8  },
+    { antigua: "Programación de sistemas embebidos",             nueva: "Comunicación y control de sistemas embebidos", crAnt: 8,  crNueva: 8  },
     { antigua: "Formación Optativa abierta",                                                                            crAnt: 16 },
     { antigua: "Formación Especializante selectiva",                                                                    crAnt: 16 },
     { antigua: "Electrónica integrada",                                                                                 crAnt: 8  },
     { antigua: "Instalaciones y seguridad radiológica",          nueva: "Legislación y seguridad hospitalaria",         crAnt: 8,  crNueva: 10 },
   ],
-  "Semestre 5": [    
-    { antigua: "Biosensores y transductores",                    nueva: "Biosensores y transductores",                  crAnt: 8,  crNueva: 8  },    
+  "Semestre 5": [
+    { antigua: "Biosensores y transductores",                    nueva: "Biosensores y transductores",                  crAnt: 8,  crNueva: 8  },
     { antigua: "Seminario de solución de problemas de Análisis del movimiento",                                         crAnt: 5  },
     { antigua: "Prótesis y órtesis",                             nueva: "Prótesis y órtesis",                           crAnt: 8,  crNueva: 8  },
     { antigua: "Instrumentación y técnicas de rehabilitación",   nueva: "Rehabilitación",                               crAnt: 8,  crNueva: 8  },
@@ -393,8 +419,6 @@ const equivalenciasPorSemestre = {
     { antigua: "Biomateriales",                                  nueva: "Biointegración de materiales",                 crAnt: 8,  crNueva: 8  },
     { antigua: "Imagenología médica",                            nueva: "Conectividad cerebral",                        crAnt: 8,  crNueva: 8  },
     { antigua: "Sistemas electrónicos",                          nueva: "Electrónica digital",                          crAnt: 8,  crNueva: 8  },
-    
-    
   ],
   "Semestre 7": [
     { antigua: "Electrofisiología molecular II",                 nueva: "Electrofisiología y neurociencias",            crAnt: 8,  crNueva: 10 },
@@ -402,8 +426,6 @@ const equivalenciasPorSemestre = {
     { antigua: "Proyecto de Instrumentación Médica",             nueva: ["Seminario de integración: Protocolo","Laboratorio Abierto: Diseño"],        crAnt: 15, crNueva: 7  },
     { antigua: "Proyecto de Biomecánica Humana",                 nueva: ["Seminario de integración: Desarrollo","Laboratorio Abierto: Construcción"], crAnt: 15, crNueva: 9  },
     { antigua: "Proyecto de Electrofisiologia",                  nueva: ["Seminario de integración: Comunicación","Laboratorio Abierto: Pruebas"],    crAnt: 15, crNueva: 7  },
-    
-    
   ],
   "Semestre 8": [
     { antigua: "Procesamiento de bioseñales",                    nueva: "Procesamiento de bioseñales",                  crAnt: 8,  crNueva: 8  },
@@ -412,17 +434,11 @@ const equivalenciasPorSemestre = {
   "Extra": [
     { antigua: "Carta de Liberación de Prácticas Profesionales o Comprobantes de experiencia profesional (320 Hrs)", nueva: "Practicas profesionales", crAnt: 0, crNueva: 20 },
   ],
-  "Cursos extras": [
-    { antigua: "Instrumentacion medica III", nueva: "Administración de negocios", crAnt: 0, crNueva: 5 },
-    { antigua: "Instrumentacion medica II", nueva: "Regulación de biomateriales", crAnt: 0, crNueva: 8 },
-    { antigua: "Instrumentacion medica IV", nueva: "Tecnología de la información en salud", crAnt: 0, crNueva: 8 },
-    { antigua: "Tópicos de Ingeniería Biomédica", nueva: "Procesos y organización biológica", crAnt: 0, crNueva: 8 },
-  ],
 };
 
 const equivalencias = Object.values(equivalenciasPorSemestre).flat();
 
-// Créditos especiales del plan nuevo 
+// Créditos especiales del plan nuevo
 const creditosEspeciales = {
   "Formacion integral":                                     4,
   "Practicas profesionales":                               20,
@@ -446,7 +462,73 @@ const creditosEspeciales = {
   "Laboratorio Abierto: Pruebas":                           3,
 };
 
-// ── Estructura de la malla nueva (respetando tu versión) ──
+    const competencias = {
+      "Inducción universitaria": "Compromiso con su medio socio-cultural / \nConocimiento sobre el área de estudio y la profesión.",
+      "Análisis de problemas globales del siglo XX": "Analiza las diversas formas como se relaciona la tecnología con los principales retos sociales del mundo presente (desigualdad y brechas digitales, accesibilidad, democracia, derechos humanos, ética, etc.), siguiendo una perspectiva interdisciplinar para proponer soluciones óptimas de problemas concretos.",
+      "Precálculo": "Resuelve problemas matemáticos que puedan plantearse en la ingeniería. Aplica los conocimientos sobre; álgebra lineal; cálculo diferencial e integral; métodos numéricos; algorítmica numérica; estadística y optimización.",
+      "Álgebra lineal": "Resuelve problemas matemáticos que puedan plantearse en la ingeniería. Aplica los conocimientos sobre; álgebra lineal; cálculo diferencial e integral; métodos numéricos; algorítmica numérica; estadística y optimización.",
+      "Fundamentos de física": "Describe y explica fenómenos naturales y procesos tecnológicos en términos de conceptos, principios y teorías físicas.",
+      "Fundamentos de programación": "Conoce y aplica los procedimientos algorítmicos básicos de las tecnologías informáticas para diseñar soluciones a problemas, analizando la idoneidad y complejidad de los algoritmos propuestos.",
+      "Legislación y seguridad hospitalaria": "Reconoce responsabilidades bioéticas y profesionales de la ingeniería biomédica y realiza juicios informados, considerando el impacto de soluciones de la ingeniería dentro de un contexto global, económico, ambiental, social e interpersonal. Interpreta la legislación y normativa, tanto nacional como internacional, y la aplica al control de calidad en las diferentes áreas clínicas.",
+      "Historia de la tecnología, el arte y la sociedad": "Analiza las cambiantes relaciones entre la esfera artefactual y la social a lo largo de a historia, siguiendo algunas de las principales aportaciones de la historia de la tecnología, para evaluar problemas particulares contemporáneos.",
+      "Anatomía": "Explora la estructura anatómica del cuerpo humano como base fundamental para el razonamiento fisiopatológico y su aproximación instrumental.",
+      "Cálculo diferencial e integral": "Resuelve problemas matemáticos que puedan planearse en la ingeniería. Aplica los conocimientos sobre: álgebra lineal; cálculo diferencial e integral; métodos numéricos; algorítmica numérica; estadística y optimización.",
+      "Circuitos eléctricos": "Entiende los fundamentos de los circuitos y los conceptos de sistemas eléctricos y electrónicos, y los relaciona con aplicaciones de sistemas biomédicos reales.",
+      "Programación estructurada": "Construye algorítmos y software. Construcción de algoritmos y software de calidad a través de metodologías y lenguajes de programación a fin de dar solución eficiente a problemas.",
+      "Instrumentación e instalación hospitalaria": "Comprende el funcionamiento del Sistema de Salud, desde su estructura organizacional hasta los diferentes niveles de atención médica para integrar procesos dentro del ecosistema hospitalario.",
+      "Ciencia y sustentabilidad": "Analiza como repercuten las ingenierías en los diversos retos de sustentabilidad, siguiendo una perspectiva interdisciplinar, para guiarse en su práctica profesional bajo los criterios del desarrollo sustentable.",
+      "Biomecánica": "Utiliza la mecánica y las matemáticas para describir el cuerpo humano, construyendo modelos adecuados, interpretando los resultados y comparando críticamente con la experimentación y la observación.",
+      "Ecuaciones diferenciales": "Resuelve problemas matemáticos que puedan plantearse en la ingeniería. Aplica los conocimientos sobre: álgebra lineal; cálculo diferencial e integral; métodos numéricos; algorítmica numérica; estadística y optimización.",
+      "Electrónica digital": "Identifica componentes de electrónica digital, reconociendo sus características técnicas y su función en los circuitos. Construye circuitos digitales básicos en base a circuitos integrados MSI.",
+      "Fundamentos de inteligencia artificial": "Conoce los fundamentos, paradigmas y técnicas propios de los sistemas inteligentes, e integra y construye sistemas, servicios y aplicaciones en contextos más amplios y multidisciplinares.",
+      "Procesos y organización biológica": "Reconoce y asocia los procesos básicos de la vida a los diversos niveles de organización: bioquímico, molecular, genómico, celular, tisular, de órgano, individual y de la población.",
+      "Estadística experimental": "Emplea las principales herramientas de análisis estadístico a partir de los métodos experimentales, y reflexiona criticamente sobre su correcta aplicación en la investigación.",
+      "Estructuras de los sistemas biológicos": "Reconoce y asocia los procesos básicos de la vida a los diversos niveles de organización: bioquímico, molecular, genómico, celular, tisular, de órgano, individual y de la población.",
+      "Comunicación y control de sistemas embebidos": "Implementa sistemas embebidos con diferentes interfaces y protocolos de comunicación para la manipulación de variables en dispositivos biomédicos",
+      "Señales y sistemas robóticos": "Modela y simula aspectos de cinemática, dinámica, estructuras y mecanismos para poder diseñar y analizar sistemas robóticos.",
+      "Tecnologías médicas": "Evalúa, selecciona y opera equipos y plataformas tecnológicas para garantizar su funcionamiento óptimo y seguro en el entorno de la salud.",
+      "Administración de negocios": "Demuestra entendimeinto de sistemas biomédicos y su entorno (modelos de negocio, regulaciones). Capacidad para el modelado matemático, cálculo y simulación en centros tecnológicos y de ingeniería de empresa, particularmente en tareas de investigación, desarrollo e innovación en todos los ámbitos relacionados con la Ingeniería Biomédica.",
+      "Electrofisiología y neurociencias": "Traslada conocimiento sistemático sobre la estructura y función del sistema nervioso para promover cambios en la tecnología biomédica.",
+      "Fisiología y fisiopatología": "Analiza los sistemas fisiológicos y órganos humanos tanto a nivel estructural como funcional y los compara con sus patologías más relevantes.",
+      "Procesamiento de bioseñales": "Maneja diferentes tecnologías y estándares para la adquisición, almacenamiento, caracterización y manipulación de señales biomédicas, incluyendo los que garantizan la anonimia y privacidad de la información.",
+      "Procesamiento de bioimágenes": "Aplica el procesamiento de imágenes en el flujo de trabajo utilizano los conceptos y técnicas adquiridos para formular modelos y encontrar soluciones a problemas específicos y comunicarlos efectivamente. Utiliza las funciones espaciales tanto desde sus principios generales como desde su parte técnica específica, y discute cuánto y como emplarlas.",
+      "Gestión e instrumentación biomédica": "Organiza la gestión de tecnología médica con atención especial a la tecnovigilancia.",
+      "Biosensores y transductores": "Evalúa críticamente los opciones de sensores y transductores para aplicaciones biomédicas específicas. Integra los principios de diseño en tecnología para evaluar resolver necesidades biomédicas del usuario.",
+      "Tecnología de la información en salud": "Integra sistemas inteligentes informáticos que soporten la toma de decisiones clínicas, considerando el marco regulatorio y discutiendo los retos de privacidad y conficialidad acerca del manejo de datos clínicos.",
+      "Ingeniería clínica": "Planifica y dirige proyectos aplicando sistemas de gestión para mejorar el proceso de la atención del paciente.",
+      "Innovación tecnológica y emprendimiento": "Comprende y aplica los principios y las técnicas de gestión de la calidad y de la innovación tecnológica en las organizaciones.",
+      "Ciencias ómicas": "Dirige la innovación e investigación colaborativa y domina las técnicas experimentales más comunes bajo la evaluación crítica y transdisciplinar del impacto de problemas teóricos experimentales en Ingeniería Biomédica y ciencias ómicas.",
+      "Biomedicina de precisión": "Analiza e interpreta grandes volúmenes de datos biomédicos mediante la aplicación de métodos matemáticos, modelado y simulación, integrando técnicas de minería de datos, procesamiento de lenguaje natural y visualización para mejorar la comprensión de los sistemas biológicos y optimizar la toma de decisiones en el ámbito de la atención médica.",
+      "Análisis del movimiento": "Aplica técnicas biomecánicas cuantitativas que permiten evaluar e interpretar patrones de movimiento para aplicaciones clínicas diagnósticas, pronósticas y terapéuticas, y para analizar el desempeño en el movimiento humano.",
+      "Prótesis y órtesis": "Conoce los diferentes materiales y las técnicas para fabricar prótesis y órtesis, y esta familiarizado con los procedimientos y políticas ocupacionales de salud en distintos ambientes.",
+      "Rehabilitación": "Incorporar la tecnología de prótesis y órtesis para optimizar el funcionamiento y reducir la discapacidad de los individuos en la interacción con su entorno.",
+      "Biointegración de materiales": "Demuestra conocimiento y comprensión crítica de la estructura, función y propiedades de los biomaterilaes en el cuerpo humano.",
+      "Regulación de biomateriales": "Selecciona crítica y éticamente materiales naturales y artificiales para diferrentes aplicaciones, con base en su estructura, propiedades y aspectos regulatorios.",
+      "Diseño de biomateriales": "Aplica el conocimiento de biomateriales en dispositivos y sistemas tecnológicos para su utilización en el ámbito de salud.",
+      "Bases de inteligencia artificial generativa": "Explica los conceptos centrales del aprendizaje profundo y compara las diferencias entre las arquitecturas más comunes.",
+      "Aplicaciones de sistemas biomédicos inteligentes": "Implementa modelos de inteligencia artificial actuales o novedosos para resolver necesidades de la Ingeniería Biomédica.",
+      "Diseño de sistemas biomédicos inteligentes": "Implementa modelos de inteligencia artificial actuales o novedosos para resolver necesidades de la Ingeniería Biomédica.",
+      "Conducta y sistemas cognitivos": "Describe las áreas del sistema nervioso implicadas en la cognición y el papel que juegan en dicho proceso.",
+      "Neuroinstrumentación": "Conoce y emplea las técnicas y métodos de sistemas en neurobiología.",
+      "Neuroinformática": "Experimenta y analiza con modelos vivos, problemas y patologías que afectan el sistema nervioso con actitud ética y de infromación continua.",
+      "Experiencia de usuario": "Mide, estudia y analiza la tecnología de integración Ciber-Humana.",
+      "Conectividad cerebral": "Domina tecnologías emergentes para el análisis y procesamiento de fenómenos neurológicos complejos.",
+      "Conectómica": "Domina tecnologías emergentes para el análisis y procesamiento de fenómenos neurológicos complejos.",
+      "Principios biorobóticos": "Integra la conocimientos de sistemas biológicos, robóticos, control, algorítmia y ética para la identificación de oportunidades innovadoras en biorobótica.",
+      "Sistemas bioinspirados": "Entiende y aplica principios biomiméticos o bioinspirados para desarrollar materiales, tecnologías o algoritmos mostrando una actitud resiliente ante los desafíos tecnológicos.",
+      "Robótica suave": "Modela y construye sistemas de robótica suaves con base en diseño bioinspirado y componentes especiales con beneficio para la sociedad.",
+      "Dispositivos microfluídicos": "Explica los principios de microfluídica, realiza simulaciones y arma interfaces y dispositivos con microfluidos para experimentación.",
+      "Microelectrónica": "Resuelve problemas interdisciplinarios, complejos y contémporaneos aplicados a la electrónica y tecnología usable y vestible.",
+      "Dispositivos usables y vestibles": "Diseña dispositivos electrónicos usables y vestibles que atienden demandas específicas individuales, considerando el impacto a la salud pública, la seguridad, la sociedad, la cultura y el ambiente.",
+      "Biología sintética": "Conoce y es capaz de idear procesos de experimentación para interpretar objetivamente las propiedades físico-químicas intrínsecas de los sistemas biológicos.",
+      "Ingeniería de órganos y tejidos": "Elabora modelos experimentales o formales de sistemas vivos para su manipulación y evaluación de oportunidades creativas e innovadoras.",
+      "Diseño de organoides": "Elabora modelos experimentales o formales de sistemas vivos para su manipulación y evaluación de oportunidades creativas e innovadoras.",
+      "Liderazgo estratégico en salud": "Habilidad para interactuar en equipos interdisciplinarios y multisectoriales, con capacidad resolutiva para satisfacer las necesidades de salud prioritarias, emergentes y especiales. Capacidad de paraticipar activamente en el desarrollo de las políticas de salud, respetando la diversidad cultural. Capacidad de motivar y conducir hacia metas comunes.",
+      "Ingeniería biomédica y sociedad": "Analizar la legislación, los reglamentos y las normas para procurar la interconexión entre la salud humana, animal y ambiental bajo el enfoque sustentable de una Sola Salud.",
+      "Diseño de políticas públicas": "Propone políticas públicas con base en las prioridades de salud pública para responder a las necesidades de salud de la población, incluyendo la caracterización de riesgo y la demanda por servicios de salud.",
+    };
+
+// Estructura de la malla nueva
 const estructuraMalla = {
   "Extras": [
     "Formacion integral",
@@ -587,7 +669,7 @@ for (const [bloque, materias] of Object.entries(estructuraMalla)) {
 document.getElementById('cr-total').textContent     = totalNuevo;
 document.getElementById('cr-pendientes').textContent = totalNuevo;
 
-//checkboxes agrupados por semestre 
+//checkboxes agrupados por semestre
 const checkList = document.getElementById('check-list');
 
 for (const [semestre, materias] of Object.entries(equivalenciasPorSemestre)) {
@@ -620,6 +702,9 @@ for (const [semestre, materias] of Object.entries(equivalenciasPorSemestre)) {
 
 // Malla visual
 const mallaVisual = document.getElementById('malla-visual');
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 function construirMalla() {
   mallaVisual.innerHTML = '';
   for (const [bloque, materias] of Object.entries(estructuraMalla)) {
@@ -633,6 +718,8 @@ function construirMalla() {
       const cr  = crPorMateria[m] !== undefined ? crPorMateria[m] : 8;
       const pct = totalNuevo > 0 ? (cr / totalNuevo * 100).toFixed(2) : 0;
       const id  = 'nodo-' + m.replace(/[^a-zA-Z0-9]/g, '');
+      const comp = competencias[m];
+      const compHtml = comp ? `<div class="competencia">${escapeHtml(comp)}</div>` : '';
       const nodo = document.createElement('div');
       nodo.className = 'nodo-materia';
       nodo.id = id;
@@ -644,6 +731,7 @@ function construirMalla() {
           <span class="pct-badge">${pct}% del plan</span>
         </div>
         <div class="cr-bar"><div class="cr-bar-fill" style="width:${pct}%"></div></div>
+        ${compHtml}
       `;
       div.appendChild(nodo);
     });
@@ -702,10 +790,11 @@ function actualizar() {
     crConv += crPorMateria['Fundamentos de física'] || 0;
   }
 
-  const pct = totalNuevo > 0 ? (crConv / totalNuevo * 100).toFixed(1) : 0;
+  const pct = totalNuevo > 0 ? Math.min(crConv / totalNuevo * 100, 100).toFixed(1) : 0;
+
   document.getElementById('cr-anterior').textContent      = crAnt;
   document.getElementById('cr-convalidados').textContent  = crConv;
-  document.getElementById('cr-pendientes').textContent    = totalNuevo - crConv;
+  document.getElementById('cr-pendientes').textContent    = Math.max(totalNuevo - crConv, 0);
   document.getElementById('pct-label').textContent        = pct + '%';
   document.getElementById('progress-fill').style.width    = pct + '%';
 }
