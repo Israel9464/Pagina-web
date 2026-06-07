@@ -251,7 +251,7 @@
 
         .nodo-materia.active .meta { color: var(--success-text); }
 
-        
+        /* Leyenda de competencia */
         .competencia {
             font-size: 0.68rem;
             line-height: 1.35;
@@ -747,7 +747,28 @@ function actualizar() {
 
   let crAnt = 0, crConv = 0;
 
-  document.querySelectorAll('#check-list input:checked').forEach(chk => {
+  // Los 3 proyectos funcionan como UN solo requisito:
+  // solo si están los tres marcados se convalidan seminarios, laboratorios y proyecto modular.
+  const nombresProyectos = [
+    "Proyecto de Instrumentación Médica",
+    "Proyecto de Biomecánica Humana",
+    "Proyecto de Electrofisiologia"
+  ];
+
+  const checkedInputs = [...document.querySelectorAll('#check-list input:checked')];
+  const nombreDe = chk => chk.closest('.materia-check').querySelector('.check-name').textContent.trim();
+  const checkedNames = checkedInputs.map(nombreDe);
+  const tieneTresProyectos = nombresProyectos.every(n => checkedNames.includes(n));
+
+  checkedInputs.forEach(chk => {
+    // Los proyectos: SIEMPRE suman sus créditos del plan anterior,
+    // pero su convalidación se procesa aparte (solo si están los tres).
+    if (nombresProyectos.includes(nombreDe(chk))) {
+      crAnt += parseInt(chk.dataset.crAnt) || 0;
+      chk.closest('.materia-check').classList.add('checked');
+      return;
+    }
+
     const nueva  = chk.dataset.nueva;
     const cAnt   = parseInt(chk.dataset.crAnt) || 0;
     const cNueva = parseInt(chk.dataset.crNueva) || 0;
@@ -764,18 +785,22 @@ function actualizar() {
     chk.closest('.materia-check').classList.add('checked');
   });
 
-  // Si tiene los 3 proyectos marcados, marcar también Proyecto modular
-  const checkedNames = [...document.querySelectorAll('#check-list input:checked')]
-    .map(chk => chk.closest('.materia-check').querySelector('.check-name').textContent.trim());
-
-  const nombresProyectos = [
-    "Proyecto de Instrumentación Médica",
-    "Proyecto de Biomecánica Humana",
-    "Proyecto de Electrofisiologia"
-  ];
-
-  const tieneTresProyectos = nombresProyectos.every(n => checkedNames.includes(n));
+  // Proyectos: la CONVALIDACIÓN solo ocurre si están marcados los TRES
+  // (el crédito del plan anterior ya se sumó arriba en cualquier caso).
   if (tieneTresProyectos) {
+    checkedInputs.forEach(chk => {
+      if (!nombresProyectos.includes(nombreDe(chk))) return;
+
+      crConv += parseInt(chk.dataset.crNueva) || 0;
+
+      (chk.dataset.nueva || '').split('|').forEach(n => {
+        const id   = 'nodo-' + n.trim().replace(/[^a-zA-Z0-9]/g, '');
+        const nodo = document.getElementById(id);
+        if (nodo) nodo.classList.add('active');
+      });
+    });
+
+    // Y se marca también el Proyecto modular
     const nodoProyecto = document.getElementById('nodo-' + 'Proyecto modular'.replace(/[^a-zA-Z0-9]/g, ''));
     if (nodoProyecto) nodoProyecto.classList.add('active');
     crConv += crPorMateria['Proyecto modular'] || 0;
